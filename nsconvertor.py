@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
-
+import pyperclip
 
 def mur_method(num, base):
+    global result
     dec_val, pos = 0, 0
     num_str = str(num)
     for digit in reversed(num_str):
@@ -16,19 +17,20 @@ def mur_method(num, base):
 
 
 def most_method(num, base):
-    result = ""
+    global result
     while num > 0:
-        remainder = num % base
-        if remainder >= 10:
-            remainder_char = chr(ord('A') + remainder - 10)
+        rem = num % base
+        if rem >= 10:
+            rem_char = chr(ord('A') + rem - 10)
         else:
-            remainder_char = str(remainder)
-        result = remainder_char + result
+            rem_char = str(rem)
+        result = rem_char + result
         num //= base
     return result
 
 
 def convert_number():
+    global result
     num = entry_number.get()
     from_base = int(entry_from_base.get())
     to_base = int(entry_to_base.get())
@@ -36,15 +38,19 @@ def convert_number():
     if from_base == 10:
         result = most_method(int(num), to_base)
     else:
-        decimal_num = mur_method(num, from_base)
+        dec_num = mur_method(num, from_base)
         if to_base == 10:
-            result = decimal_num
+            result = dec_num
         else:
-            result = most_method(decimal_num, to_base)
+            result = most_method(dec_num, to_base)
 
     result_label.config(text=result)
 
+def copy_num():
+    global result
+    pyperclip.copy(result)
 
+result = ""
 root = tk.Tk()
 root.title("Конвертер систем счисления")
 
@@ -66,8 +72,11 @@ label_to_base.grid(row=2, column=0, padx=10, pady=10)
 entry_to_base = ttk.Entry(root)
 entry_to_base.grid(row=2, column=1, padx=10, pady=10)
 
+copy_button = ttk.Button(root, text="Копировать", command=copy_num)
+copy_button.grid(row=3, column=0, padx=10, pady=10)
+
 convert_button = ttk.Button(root, text="Перевести", command=convert_number)
-convert_button.grid(row=3, columnspan=2, padx=10, pady=10)
+convert_button.grid(row=3, column=1, padx=10, pady=10)
 
 result_label = ttk.Label(root, text="", font=("Arial", 12))
 result_label.grid(row=4, columnspan=2, padx=10, pady=10)
